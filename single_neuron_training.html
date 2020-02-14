@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<meta charset="utf-8"> 
+		<meta name="viewport" content="width=device-width"> 
+	 
+		<title>afMLP</title> 
+
+		<link href='assets/css/font-awesome.min.css' rel='stylesheet' />
+		<link href="assets/css/bootstrap.css" rel="stylesheet"> 
+		<link href="assets/style/style.css" rel="stylesheet"> 
+	</head> 
+	<body>
+		<div class="content">
+
+            <div class="row">
+                <div class="waiting" id="waiting"></div>
+                <div class="col-md-6 col-md-offset-3" >
+                    <h3 class="text text-primary"> Single neuron training - afmika</h3>
+                    <canvas id="canvas" height="400" width="650"></canvas>
+                    <table id="result" class="table table-bordered" >
+                        <tr>
+                            <th>Input</th><th>Label</th><th>Guessed</th><th>Result</th>
+                        </tr>
+                    </table>
+                </div>
+    
+            </div>
+        
+        </div>
+		
+		<script src="assets/js/jquery.min.js"  type="text/javascript"></script> 
+        <script src="assets/js/bootstrap.min.js"  type="text/javascript"></script> 
+        
+
+        <script src="classes/Neuron.js" type="text/javascript"></script>
+        <script src="classes/Layer.js" type="text/javascript"></script>
+        <script src="classes/TrainingMachine.js" type="text/javascript"></script>
+
+        <script src="graphics/DrawingTools.js" type="text/javascript"></script>
+        <script src="scripts/single_neuron_training.js" type="text/javascript"></script>
+	</body>
+</html>

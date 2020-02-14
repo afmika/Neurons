@@ -1,0 +1,38 @@
+tr:hover {
+	background-color: aliceblue;
+	transition:0.1s;
+}
+
+.can_zoom:hover {
+	transform:scale(1.2);
+	transition:0.1s;
+}
+
+.item_word,.small_item_word {
+	font-size: 16px;
+	color: black;
+	background-color: #f9f2f4;
+	border: 0.2px solid grey;
+	border-radius: 3px;
+}
+.small_item_word {
+	font-size: 12px;
+}
+
+.waiting {
+	position : fixed;
+	z-index: 9999; /*POSITION AU DESSUS DE TOUS LES AUTRES EL.*/
+	background : url('../PhotoData/loading.gif') 50% 50% no-repeat;
+	top : 0px;
+	left : 0px;
+	color: white;
+	font-size: 23px;
+	height : 100%;
+	width : 100%;
+	opacity: 0.94;
+	background-color: black;
+}
+
+#canvas {
+	border:2px Solid Black;
+}
