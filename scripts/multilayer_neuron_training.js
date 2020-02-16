@@ -20,8 +20,8 @@ const nb_input = 5;
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [4, 5, 4, 2],
-    n_input : 5,
+    layer_structure : [2, 2],
+    n_input : 2,
     n_output : 2
 });
 

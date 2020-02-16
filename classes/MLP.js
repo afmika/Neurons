@@ -6,6 +6,17 @@ class MLP {
         if(config) {
             this.setConfig(config);
         }
+
+        this.functions = {
+            sigmoid : {
+                expression : function(s) {
+                    return 1 / (1 + Math.exp(-s));
+                },
+                derivative : function(s) {
+                    return 1/ ( 2 + Math.exp(-s)+Math.exp(s));
+                }
+            }
+        }
     }
 
     /**
@@ -27,6 +38,12 @@ class MLP {
             layer.data['index'] = index;
             let nb_of_inputs = index == 0 ? this.n_input : this.layers[index-1].getNbOfNeuron();
             layer.setNeuronsTo(this.layer_structure[index], nb_of_inputs);
+
+            layer.each((neuron, index) => {
+                neuron.setActivationFunction(this.functions.sigmoid.expression);
+                neuron.setActivationFunctionDerivative(this.functions.sigmoid.expression);
+            });
+
             this.layers.push(layer);
         }
         // joins them
@@ -57,6 +74,10 @@ class MLP {
         this.cursor_layer = this.cursor_layer.getPrev();
         return this.cursor_layer;
     }
+
+    hasNext() {
+        return
+    }
     /**
      * @returns {Layer}
      */
@@ -64,10 +85,53 @@ class MLP {
         this.cursor_layer = this.cursor_layer.getNext();
         return this.cursor_layer;
     }
+    end() {
+        while(this.current().hasNext()) {
+            this.next();
+        }
+        return this.current();
+    }
     /**
      * @returns {Layer}
      */
     current() {
         return this.cursor_layer;
     }
+
+    /**
+     * @param {number} input
+     * @returns {number[]}
+     */
+    getOutput(input) {
+        let output = [];
+        let that = this;
+        this.each((layer, l_index) => {
+            layer.each((neuron, n_index) => {
+                let out = null;
+                if(l_index == 0) {
+                    out = neuron.getOutput(input);
+                    neuron.set("out", out);
+                } else {
+                    let _input = [];
+                    let previous = that.layers[l_index - 1];
+                    previous.each((p_neuron, pn_index) => {
+                        _input.push(p_neuron.get('out'));
+                    });
+                    // console.log("layer ",l_index,_input);
+                    out = neuron.getOutput(_input);
+                    neuron.set("out", out);
+                    if(l_index + 1 == that.layers.length) {
+                        output.push(out);
+                    }
+                }
+                
+            });
+        });
+        return output;
+    }
+/*
+    weightsToMatrix() {
+
+    }
+*/
 }

@@ -85,9 +85,8 @@ function runTest() {
     // test
     let pass_counter = 0;
     samples.forEach(sample => {
-        neuron.setInput(sample.input);
         const correct = sample.label;
-        const guessed = neuron.getOutput();
+        const guessed = neuron.getOutput(sample.input);
         const pass = Math.round(guessed) == correct;
         pass_counter += pass ? 1 : 0;
         logs([sample.input.join(", "), sample.label, guessed, pass ? `<b class="text text-primary">Pass</b>` : `<b class="text text-danger">Fail</b>`]);
@@ -108,7 +107,7 @@ function drawGradientErrorCurve() {
             let hy = Math.exp(dE * 5);
             max_error = Math.max(hy, max_error);
             let y = graph.height - graph.height * (hy / max_error);
-            DrawGraph.line(x, graph.height, x, y);
+            DrawGraph.line(x, graph.height, x, y, "red");
             if(index == 0) {
                 xs = x;
                 ys = y;

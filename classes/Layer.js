@@ -15,9 +15,28 @@ class Layer {
         this.data = {}; // extra info
     }
     /**
-     * 
+     * @param {string} key data.key
+     * @param {any} value data.value
+     */
+    set(key, value) {
+        this.data[key] = value;
+    }
+    /**
+     * @param {string} key data.key
+     */
+    get(key) {
+        return this.data[key];
+    }
+    /**
+     * @returns {JSON} data
+     */
+    getData() {
+        return this.data;
+    }
+
+    /**
      * @param {number} n_neuron number of neuron for this layer
-     * @param {number} n_input number of input of each neuron
+     * @param {number} n_input number of each neuron's input
      */
     setNeuronsTo(n_neuron, n_input) {
         for (let index = 0; index < n_neuron; index++) {
@@ -51,6 +70,19 @@ class Layer {
     getNext() {
         return this.next;
     }
+    /**
+     * @returns {boolean}
+     */
+    hasNext() {
+        return this.getNext() != null;
+    }
+    /**
+     * @returns {boolean}
+     */
+    hasPrev() {
+        return this.getPrev() != null;
+    }
+
     /**
      * @returns {number}
      */

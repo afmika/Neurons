@@ -33,12 +33,11 @@ class TrainingMachine {
         if(x_.length != nb_input)
             throw "Invalid sample at index "+sample_index+" : "+JSON.stringify(sample);
 
-        neuron.setInput(x_);
-        const y = neuron.getOutput();
+        const y = neuron.getOutput(x_);
 
         for (let k = 0; k <nb_input; k++) {
             /*
-            * delta_w[k] = dError/dw[k] = alpha * (y correct - y guess) * input[k]
+            * delta_w[k] = - dError/dw[k] = 2 * (y correct - y guess) * input[k]
             * */
             const delta_w_k = alpha * (y_ - y) * x_[k];;
             neuron.weight[k] += delta_w_k;
@@ -46,7 +45,7 @@ class TrainingMachine {
             error_gradient.push(delta_w_k);
         }
         /*
-        * delta_bias = dError/dbias = alpha * (y correct - y guess)
+        * delta_bias = - dError/dbias = 2 * (y correct - y guess)
         * */
         const delta_bias =  alpha * (y_ - y);
         neuron.bias += delta_bias;
@@ -79,10 +78,53 @@ class TrainingMachine {
 
 
     /**
-     * @param {Network} newtwork neural network input
-     * @param {Function} fun function called at each step :)
+     * @param {MLP} mlp neural network input
+     * @param {Object} single_sample { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
+     * @param {Number} sample_index sample index (optional)
+     * @returns {number[]}
      */
-    trainNetwork(newtwork, fun) {
+    trainNetworkPerSample(mlp, single_sample, sample_index) {
+        let error_gradient = []; // does nothing
 
+        let sample = single_sample;
+        let alpha = this.alpha;
+        let nb_input = neuron.getNumberOfInput();
+
+        const [ x_ , y_ ] = [sample.input, sample.label];
+
+        if(x_.length != nb_input)
+            throw "Invalid sample at index "+sample_index+" : "+JSON.stringify(sample);
+
+        
+        let layer = mlp.end(); // the output layer
+        let output_layer = true;
+        while(mlp.current().hasPrev()) {
+            if(output_layer) {
+
+            } else {
+                
+            }
+
+            output_layer = false;
+            mlp.prev();
+        }
+
+        return error_gradient;
     }
+}
+
+
+/**
+ * @param {Number[]} u 
+ * @param {Number[]} v 
+ */
+function matrixProduct(u, v) {
+
+}
+
+/**
+ * @param {Number[]} u 
+ */
+function matrixTranspose(u) {
+
 }

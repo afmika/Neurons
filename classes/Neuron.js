@@ -7,15 +7,38 @@
 class Neuron {
     constructor(size) {
         this.n_input = size || 0;
-        this.input = new Array(size).fill(0);
         this.weight = new Array(size).fill(0);
         this.bias = 0;
-        this.activation = function(s) {
+        this.data = {};
+        this.activationFunction = function(s) {
             return 1 / (1 + Math.exp(-s));
-            // return s > 0 ? 1 : 0;
+        };
+
+        this.activationFunctionDerivative = function(s) {
+            return 1/ ( 2 + Math.exp(-s)+Math.exp(s));
         };
     }
-    
+    /**
+     * @param {string} key data.key
+     * @param {any} value data.value
+     */
+    set(key, value) {
+        this.data[key] = value;
+    }
+    /**
+     * @param {string} key data.key
+     */
+    get(key) {
+        return this.data[key];
+    }
+    /**
+     * @returns {JSON} data
+     */
+    getData() {
+        return this.data;
+    }
+
+
     getWeight() {
         return this.weight;
     }
@@ -37,33 +60,66 @@ class Neuron {
         this.bias = bias;
     }
 
-    setInput(input) {
-        if(input.length != this.n_input) {
-            throw "nb_input must be equal to "+this.n_input;
-        }
-        this.input = input;
-    }
-    getInput() {
-        return this.input;
-    }
-
     setNumberOfInput(n_input) {
         this.n_input = n_input;
     }
     getNumberOfInput() {
         return this.n_input;
     }
-    getScalarProduct() {
+
+    /**
+     * @param {Function} fun number function(x : number);
+     */
+    setActivationFunction(fun) {
+        this.activationFunction = fun;
+    }
+    /**
+     * @param {Function} fun number function(x : number);
+     */
+    setActivationFunctionDerivative(fun) {
+        this.activationFunctionDerivative = fun;
+    }
+
+    /**
+     * @param {number} s 
+     */
+    activation(s) {
+        return this.activationFunction(s);
+    }
+    /**
+     * @param {number} s
+     */
+    diff_activation(s) {
+        return this.activationFunctionDerivative(s);
+    }
+
+    /**
+     * @param {Number[]} input 
+     */
+    getScalarProductWith(input) {
+        if(input.length != input.length) {
+            throw new Error("Invalid input");
+        }
         let s = 0;
         for (let i = 0; i < this.n_input; i++) {
-            const [x, w] = [this.input[i], this.weight[i]];
+            const [x, w] = [input[i], this.weight[i]];
             s += x * w;
         }
         return s + this.bias;
     }
 
-    getOutput() {
-        let s = this.getScalarProduct();
+    /**
+     * @param {Number[]} input 
+     */
+    getOutput(input) {
+        if(!!!input) {
+            throw new Error("No input given");
+        }
+        if(this.n_input != input.length) {
+            throw new Error("Invalid number of input");
+        }
+
+        let s = this.getScalarProductWith(input);
         return this.activation(s);
     }
 }

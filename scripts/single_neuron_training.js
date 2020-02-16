@@ -75,9 +75,8 @@ function runTest() {
     // test
     let pass_counter = 0;
     samples.forEach(sample => {
-        neuron.setInput(sample.input);
         const correct = sample.label;
-        const guessed = neuron.getOutput();
+        const guessed = neuron.getOutput(sample.input);
         const pass = Math.round(guessed) == correct;
         pass_counter += pass ? 1 : 0;
         logs([sample.input.join(", "), sample.label, guessed, pass ? `<b class="text text-primary">Pass</b>` : `<b class="text text-danger">Fail</b>`]);
