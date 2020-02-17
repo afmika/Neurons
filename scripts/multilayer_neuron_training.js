@@ -12,27 +12,26 @@ const Draw = new DrawingTools(ctx);
 const width = canvas.width;
 const height = canvas.height;
 
-const evolution_time = 100; //ms
-const step = 20;
+const step = 2000;
 const learning_rate = 0.8;
 
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [4, 5, 3],
+    layer_structure : [5, 4, 3],
     n_input : 5
 });
 
 const samples = [
-    {"input":[1, 1, 1, 1, 1],"label":[1, 1, 1]},
-    {"input":[0, 1, 1, 1, 1],"label":[1, 1, 1]},
-    {"input":[0, 0, 1, 1, 1],"label":[1, 1, 1]},
-    {"input":[0, 0, 0, 1, 1],"label":[0, 1, 1]},
-    {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
-    {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
-    {"input":[1, 0, 0, 0, 0],"label":[1, 0, 0]},
-    {"input":[1, 1, 0, 0, 0],"label":[1, 1, 0]},
-    {"input":[1, 1, 1, 1, 0],"label":[1, 1, 0]}
+    {"input" : [1, 1, 1, 1, 1], "label" : [1, 1, 1]},
+    {"input" : [0, 1, 1, 1, 1], "label" : [1, 1, 1]},
+    {"input" : [0, 0, 1, 1, 1], "label" : [1, 1, 1]},
+    {"input" : [0, 0, 0, 1, 1], "label" : [0, 1, 1]},
+    {"input" : [0, 0, 0, 0, 1], "label" : [0, 0, 1]},
+    {"input" : [0, 0, 0, 0, 1], "label" : [0, 0, 1]},
+    {"input" : [1, 0, 0, 0, 0], "label" : [1, 0, 0]},
+    {"input" : [1, 1, 0, 0, 0], "label" : [1, 1, 0]},
+    {"input" : [1, 1, 1, 1, 0], "label" : [1, 1, 0]}
 ];
 
 $("#result").hide();

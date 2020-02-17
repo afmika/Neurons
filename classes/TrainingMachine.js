@@ -16,6 +16,7 @@ class TrainingMachine {
         this.n_steps = steps;
     }  
     /**
+     * Train a single neuron for a single example
      * @param {Neuron} neuron neuron input
      * @param {Object} single_sample { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
      * @param {Number} sample_index sample index (optional)
@@ -54,6 +55,7 @@ class TrainingMachine {
     }
 
     /**
+     * Train a single neuron for a set of examples
      * @param {Neuron} neuron neuron input
      * @param {Object} samples { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
      * @param {Function} fun function called at each step
@@ -73,31 +75,12 @@ class TrainingMachine {
     }
 
 
-
-    /**
-     * @param {MLP} mlp neuron input
-     * @param {JSON[]} samples Array{ outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
-     * @param {Function} fun function called at each step
-     */
-    trainNetwork(mlp, samples, fun) {
-        let step_left = this.n_steps;
-        let that = this;
-        while(step_left > 0) {
-            let total_avg = 0;
-            samples.forEach((sample, index) => {
-                total_avg += that.trainNetworkPerSample(mlp, sample, index); // avg err. for the current sample
-            });
-            let tot_err = total_avg / samples.length; // avg of sum(avg errors)
-            fun(mlp, (this.n_steps - step_left), tot_err);
-            step_left--;
-        }
-    }
-
     /**
      * Backpropagation Algorithm for a single example
      *
      * @param {MLP} mlp neuron input
      * @param {JSON} sample { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
+     * @param {number} index sample index
      */
     trainNetworkPerSample(mlp, sample, index) {
         let alpha = this.alpha;
@@ -149,5 +132,25 @@ class TrainingMachine {
         mlp.syncWithArrayRepresentations();
 
         return mlp.avg_error();
+    }
+
+    /**
+     * Train the neural network for a set of examples
+     * @param {MLP} mlp neuron input
+     * @param {JSON[]} samples Array{ outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
+     * @param {Function} fun function called at each step
+     */
+    trainNetwork(mlp, samples, fun) {
+        let step_left = this.n_steps;
+        let that = this;
+        while(step_left > 0) {
+            let total_avg = 0;
+            samples.forEach((sample, index) => {
+                total_avg += that.trainNetworkPerSample(mlp, sample, index); // avg err. for the current sample
+            });
+            let tot_err = total_avg / samples.length; // avg of sum(avg errors)
+            fun(mlp, (this.n_steps - step_left), tot_err);
+            step_left--;
+        }
     }
 }

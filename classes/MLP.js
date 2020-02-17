@@ -26,6 +26,7 @@ class MLP {
     }
 
     /**
+     * Configure the neural network's general structure
      * @param {Object} config {layer_structure: [], n_input : number}
      */
     setConfig(config) {
@@ -102,6 +103,7 @@ class MLP {
         });
     }
     /**
+    * Current average error
     * @returns {number}
     */
     avg_error() {

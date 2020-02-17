@@ -15,6 +15,7 @@ class Layer {
         this.data = {}; // extra info
     }
     /**
+     * Add new data
      * @param {string} key data.key
      * @param {any} value data.value
      */
@@ -22,6 +23,7 @@ class Layer {
         this.data[key] = value;
     }
     /**
+     * Get data by key
      * @param {string} key data.key
      */
     get(key) {
@@ -35,6 +37,7 @@ class Layer {
     }
 
     /**
+     * Configure the number of neurons and inputs
      * @param {number} n_neuron number of neuron for this layer
      * @param {number} n_input number of each neuron's input
      */
@@ -47,24 +50,28 @@ class Layer {
     }
 
     /**
+     * Set the previous layer
      * @param {Layer} prev 
      */
     setPrev(prev) {
         this.prev = prev;
     }
     /**
+     * Set the next layer
      * @param {Layer} next 
      */
     setNext(next) {
         this.next = next;
     }
     /**
+     * Get the previous layer
      * @returns {Layer} next 
      */
     getPrev() {
         return this.prev;
     }
     /**
+     * Get the next layer
      * @returns {Layer} next 
      */
     getNext() {
@@ -91,6 +98,7 @@ class Layer {
     }
     
     /**
+     * For loop
      * @param {Function} fun 
      */
     each(fun) {

@@ -5,9 +5,13 @@
  */
 
 class Neuron {
-    constructor(size) {
-        this.n_input = size || 0;
-        this.weight = new Array(size).fill(0);
+    /**
+     * 
+     * @param {number} n_input number of input
+     */
+    constructor(n_input) {
+        this.n_input = n_input || 0;
+        this.weight = new Array(n_input).fill(0);
         this.bias = 0;
         this.data = {};
         this.activationFunction = function(s) {
@@ -38,10 +42,16 @@ class Neuron {
         return this.data;
     }
 
-
+    /**
+     * @returns {number[]}
+     */
     getWeight() {
         return this.weight;
     }
+    /**
+     * 
+     * @param {number[]} weight 
+     */
     setWeight(weight) {
         if(weight.length != this.n_input) {
             throw "nb_weight must be equal to "+this.n_input;
@@ -53,16 +63,29 @@ class Neuron {
         this.bias = Math.random();
     }
     
+    /**
+     * @returns {number}
+     */
     getBias() {
         return this.weight;
     }
+
+    /**
+     * @param {number} bias 
+     */
     setBias(bias) {
         this.bias = bias;
     }
 
+    /**
+     * @param {number} n_input 
+     */
     setNumberOfInput(n_input) {
         this.n_input = n_input;
     }
+    /**
+     * @returns {number}
+     */
     getNumberOfInput() {
         return this.n_input;
     }
@@ -73,6 +96,7 @@ class Neuron {
     setActivationFunction(fun) {
         this.activationFunction = fun;
     }
+
     /**
      * @param {Function} fun number function(x : number);
      */
@@ -86,6 +110,7 @@ class Neuron {
     activation(s) {
         return this.activationFunction(s);
     }
+
     /**
      * @param {number} s
      */
@@ -109,7 +134,7 @@ class Neuron {
     }
 
     /**
-     * @param {Number[]} input 
+     * @param {number[]} input 
      */
     getOutput(input) {
         if(!!!input) {
@@ -122,6 +147,10 @@ class Neuron {
         let s = this.getScalarProductWith(input);
         return this.activation(s);
     }
+
+    /**
+     * @param {number[]} input 
+     */
     getDerivativeOutput(input) {
         if(!!!input) {
             throw new Error("No input given");

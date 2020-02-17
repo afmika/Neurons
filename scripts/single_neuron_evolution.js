@@ -15,7 +15,7 @@ const DrawGraph = new DrawingTools(ctx_graph);
 const width = canvas.width;
 const height = canvas.height;
 
-const evolution_time = 100; //ms
+const evolution_time = 60; //ms
 const step = 250;
 const learning_rate = 0.8;
 const nb_input = 5;
