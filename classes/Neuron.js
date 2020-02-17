@@ -122,4 +122,15 @@ class Neuron {
         let s = this.getScalarProductWith(input);
         return this.activation(s);
     }
+    getDerivativeOutput(input) {
+        if(!!!input) {
+            throw new Error("No input given");
+        }
+        if(this.n_input != input.length) {
+            throw new Error("Invalid number of input");
+        }
+
+        let s = this.getScalarProductWith(input);
+        return this.diff_activation(s);
+    }
 }

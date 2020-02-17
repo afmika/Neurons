@@ -1,6 +1,6 @@
 class MLP {
     /**
-     * @param {Object} config {layer_structure: [], n_input : number, n_output : number}
+     * @param {Object} config {layer_structure: [], n_input : number}
      */
     constructor(config) {
         if(config) {
@@ -20,12 +20,11 @@ class MLP {
     }
 
     /**
-     * @param {Object} config {layer_structure: [], n_input : number, n_output : number}
+     * @param {Object} config {layer_structure: [], n_input : number}
      */
     setConfig(config) {
         this.layer_structure = config.layer_structure;
         this.n_input = config.n_input;
-        this.n_output = config.n_output;
 
         this.layers = [];
         this.init();
@@ -54,7 +53,49 @@ class MLP {
             }
         }
         this.resetCursor();
+
+        this.computeArrayRepresentations();
     }
+
+    computeArrayRepresentations() {
+        this.weights = []; // 3d
+        this.biases = []; // 2d
+        this.errors = []; // 2d
+        this.deltas = []; // 2d
+        this.outputs = []; // 2d
+
+        let that = this;
+        this.each((layer, l_index) => {
+            that.weights[l_index] = [];
+            that.biases[l_index] = [];
+            that.errors[l_index] = [];
+            that.deltas[l_index] = [];
+            that.outputs[l_index] = []; // 2d
+
+            layer.each((neuron, n_index) => {
+                that.weights[l_index][n_index] = neuron.weight;
+                that.biases[l_index][n_index] = neuron.bias;
+                that.errors[l_index][n_index] = 0;
+                that.deltas[l_index][n_index] = 0;
+                that.outputs[l_index][n_index] = 0;
+            });
+        });
+    }
+
+    syncWithArrayRepresentations() {
+        // called to sync the object representation and the array representation
+        let that = this;
+        this.each((layer, l_index) => {
+            layer.each((neuron, n_index) => {
+                neuron.weight = that.weights[l_index][n_index];
+                neuron.bias = that.biases[l_index][n_index];
+                neuron.set("error", that.errors[l_index][n_index]);
+                neuron.set("delta", that.deltas[l_index][n_index]);
+                neuron.set("output", that.outputs[l_index][n_index]);
+            });
+        });
+    }
+
     /**
      * @param {Function} fun
      */
@@ -106,27 +147,30 @@ class MLP {
         let output = [];
         let that = this;
         this.each((layer, l_index) => {
+            let _input = [];
+            if(l_index == 0) {
+                _input = input;
+            } else {
+                let previous = that.layers[l_index - 1];
+                previous.each((p_neuron, pn_index) => {
+                    _input.push(p_neuron.get('out'));
+                });
+            }
             layer.each((neuron, n_index) => {
-                let out = null;
-                if(l_index == 0) {
-                    out = neuron.getOutput(input);
-                    neuron.set("out", out);
-                } else {
-                    let _input = [];
-                    let previous = that.layers[l_index - 1];
-                    previous.each((p_neuron, pn_index) => {
-                        _input.push(p_neuron.get('out'));
-                    });
-                    // console.log("layer ",l_index,_input);
-                    out = neuron.getOutput(_input);
-                    neuron.set("out", out);
-                    if(l_index + 1 == that.layers.length) {
-                        output.push(out);
-                    }
-                }
-                
+                const out = neuron.getOutput(_input);
+                neuron.set('input', _input); // used for training
+                neuron.set("out", out);
+                output.push(out);
             });
+
+            // console.log("l_index ", l_index,"input ",_input);
+            // console.log("l_index ", l_index,"out ",output);
+            if(l_index + 1 != that.layers.length) {
+                output = []; // reset
+            }
         });
+
+        // console.log(output);
         return output;
     }
 /*
