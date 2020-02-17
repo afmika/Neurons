@@ -24,7 +24,7 @@ let max_array = 150;
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [4, 5, 3],
+    layer_structure : [4, 3, 3],
     n_input : 5
 });
 
@@ -78,7 +78,6 @@ function drawGradientErrorCurve() {
 }
 
 function runTest() {
-    // test
     // test
     let pass_counter = 0;
     samples.forEach(sample => {

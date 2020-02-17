@@ -13,7 +13,7 @@ const width = canvas.width;
 const height = canvas.height;
 
 const evolution_time = 100; //ms
-const step = 2000;
+const step = 20;
 const learning_rate = 0.8;
 
 let Trainer = new TrainingMachine(step, learning_rate);
@@ -30,7 +30,6 @@ const samples = [
     {"input":[0, 0, 0, 1, 1],"label":[0, 1, 1]},
     {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
     {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
-
     {"input":[1, 0, 0, 0, 0],"label":[1, 0, 0]},
     {"input":[1, 1, 0, 0, 0],"label":[1, 1, 0]},
     {"input":[1, 1, 1, 1, 0],"label":[1, 1, 0]}
@@ -50,7 +49,6 @@ function logs(obj) {
 }
 
 function runTest() {
-    // test
     // test
     let pass_counter = 0;
     samples.forEach(sample => {

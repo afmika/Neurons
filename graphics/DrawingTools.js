@@ -68,10 +68,9 @@ class DrawingTools {
 
 	circle(centerX, centerY, radius, stroke, fill) {
 		let context = this.context;
-
 		context.beginPath();
 		context.strokeStyle = stroke || "black";
-		
+
 		context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
 		if( fill ) {
 			context.fillStyle = fill;
@@ -113,11 +112,9 @@ class DrawingTools {
 			y : c_height / 2
 		};
 		inputs_coord.forEach((p, i) => {
-			let rel = w[i] / max_w;
-			let lineThickness = Math.abs(5 * Math.exp(rel / 2));
-			let color = 55 + Math.round(Math.abs(rel) * 1000 ) % 200;
-			color = "rgb(0, "+Math.floor(color/3)+", 0, "+Math.abs(rel)+")";
-			this.line(n.x, n.y, p.x, p.y, color, lineThickness);
+			let rel = Math.abs(w[i] / 5);
+			let color = "rgb(0, 0, 100, "+rel+")";
+			this.line(n.x, n.y, p.x, p.y, color, 5);
 			this.circle(p.x, p.y, radius, "black", "grey");
 
 			this.text(w[i] + "", p.x + radius * 2, p.y);
@@ -131,9 +128,8 @@ class DrawingTools {
 		this.line(n.x, n.y, n.x, n.y + bias_height, color, lineThickness);
 		this.text(neuron.bias + "", n.x + radius, n.y + bias_height);
 
-
-		this.arrow(n.x, n.y, c_width, c_height/2, "black", 50, 3);
-		this.circle(n.x, n.y, radius * 2, "black", "pink");
+		this.arrow(n.x, n.y, c_width, c_height/2, "rgb(0,0,100)", 50, 3);
+		this.circle(n.x, n.y, radius * 2, "black", "grey");
 
 	}
 	/**
@@ -143,6 +139,7 @@ class DrawingTools {
 	 */
 	multiLayerNeuralNetwork(mlp, c_width, c_height) {
 		this.clear(0, 0, c_width, c_height);
+		let context = this.context;
 		
 		let left_offset = c_height / 12;
 
@@ -178,6 +175,7 @@ class DrawingTools {
 		let neuron_coord = [];
 		let that = this;
 		mlp.each((layer, l_index) => {
+			neuron_coord[l_index] = [];
 			layer.each((neuron, n_index) => {
 				let _offset_y = c_height / 8;
 				let _region_height = ((c_height - 2*_offset_y) / layer.getNbOfNeuron()); // allowed region for each input
@@ -190,26 +188,48 @@ class DrawingTools {
 					x : neuron_start_offset_x + l_index * _zone_layer,
 					y : _offset_y + (n_index + 0.5) * _cte * _radius
 				};
+				neuron_coord[l_index].push(p);
 
+				context.restore();
 				that.circle(p.x, p.y, _radius, "black", "grey");
+				context.save();
 
 				let rel = neuron.bias;
-				let lineThickness = Math.abs(5 * Math.exp(rel / 2));
+				let opacity = Math.abs(rel * 2);
 				let color = 55 + Math.round(Math.abs(rel) * 1000 ) % 200;
-				color = "rgb(0, "+Math.floor(color/3)+", 0, "+Math.abs(rel)+", 0.8)";
-				this.line(p.x, p.y, p.x, p.y + bias_height, color, lineThickness);
-				this.text(roundTo(neuron.bias, 3) + "", p.x + 10, p.y + bias_height);
+
+				opacity = opacity >= 1 ? 1 : opacity;
+				color = "rgb(0, 0, 0, "+opacity+")";
+				this.line(p.x, p.y, p.x, p.y + bias_height, color, 4);
 			});
 		});
 
-		/*
-		// bias
-		
+		for (let layer = 0; layer < mlp.layers.length; layer++) {
+			neuron_coord[layer].forEach((p, j) => {
+				let previous = null;
+				if(layer == 0) {
+					previous = inputs_coord;
+				} else {
+					previous = neuron_coord[layer - 1];
+				}
 
+				for (var i = 0; i < previous.length; i++) {
+					let prev = previous[i];
+					let rel = mlp.layers[layer].neurons[j].weight[i];
 
-		this.arrow(n.x, n.y, c_width, c_height/2, "black", 50, 3);
-		this.circle(n.x, n.y, radius * 2, "black", "pink");
-		*/
+					let opacity = Math.abs(rel);
+					let color = 55 + Math.round(Math.abs(rel) * 1000 ) % 200;
+
+					opacity = opacity >= 1 ? 1 : opacity;
+					color = "rgb(0, 0, 100, "+opacity+")";
+					this.line(p.x, p.y, prev.x, prev.y, color, 4);
+				}
+
+				if(layer + 1 == mlp.layers.length) {
+					that.arrow(p.x, p.y, c_width, p.y, "rgb(0,0,100)", 50, 3);
+				}
+			});
+		}
 	}
 
 	phasor(phasor, time, stroke) {
@@ -246,7 +266,7 @@ class DrawingTools {
 		// head
 		context.beginPath();
 		
-		context.lineWidth = 0.5 || line_width;
+		context.lineWidth = line_width || 0.5;
 		
 		context.strokeStyle = stroke || "black";
 		context.moveTo(minX, minY);
@@ -261,7 +281,7 @@ class DrawingTools {
 		// line
 		context.beginPath();
 		context.strokeStyle = stroke || "black";
-		context.lineWidth = 0.5 || line_width;
+		context.lineWidth = line_width || 0.5;
 		context.moveTo(minX, minY);
 		context.lineTo(maxX, maxY);
 

@@ -85,8 +85,7 @@ class TrainingMachine {
         while(step_left > 0) {
             let total_avg = 0;
             samples.forEach((sample, index) => {
-                that.trainNetworkPerSample(mlp, sample, index);
-                total_avg += mlp.avg_error(); // avg err. for the current sample
+                total_avg += that.trainNetworkPerSample(mlp, sample, index); // avg err. for the current sample
             });
             let tot_err = total_avg / samples.length; // avg of sum(avg errors)
             fun(mlp, (this.n_steps - step_left), tot_err);
@@ -99,10 +98,8 @@ class TrainingMachine {
      *
      * @param {MLP} mlp neuron input
      * @param {JSON} sample { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
-     * @param {number} index function called at each step
      */
     trainNetworkPerSample(mlp, sample, index) {
-        let error_t = 0; // error for a single example
         let alpha = this.alpha;
         let nb_layers = mlp.layers.length;
 
@@ -149,7 +146,8 @@ class TrainingMachine {
                 mlp.biases[layer][node] += alpha * delta;
             }
         }
-
         mlp.syncWithArrayRepresentations();
+
+        return mlp.avg_error();
     }
 }

@@ -54,20 +54,6 @@ const samples = [
     {"input":[1,1,0,0,1],"label":0}
 ];
 
-/*
-const samples = [
-    {input: [1, 1, 1], label : 1},
-    {input: [1, 1, 0], label : 0},
-    {input: [1, 0, 0], label : 1},
-    {input: [0, 0, 0], label : 0},
-
-    {input: [0, 0, 1], label : 1},
-    {input: [0, 1, 1], label : 0},
-    {input: [0, 1, 0], label : 1},
-    {input: [0, 0, 0], label : 0}
-];
-*/
-
 $("#result").hide();
 function logs(obj) {
     $("#result").show();
@@ -126,13 +112,13 @@ function startTraining() {
         if(step_left > 0) {
             let average_grad_error = 0;
             samples.forEach((sample, index) => {
-                let euclidean_dist_gradError = 0;
+                let sq_err = 0;
                 let error_gradient = Trainer.trainNeuronPerSample(neuron, sample, index);
                 error_gradient.forEach(e => {
-                    euclidean_dist_gradError += e * e;
+                    sq_err += e * e;
                 });
 
-                average_grad_error += Math.sqrt(euclidean_dist_gradError);
+                average_grad_error += sq_err;
             });
 
             average_grad_error = average_grad_error / samples.length;
