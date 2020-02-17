@@ -76,41 +76,42 @@ class TrainingMachine {
 
     /**
      * @param {MLP} mlp neuron input
-     * @param {Object} samples { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
+     * @param {JSON[]} samples Array{ outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
      * @param {Function} fun function called at each step
      */
     trainNetwork(mlp, samples, fun) {
         let step_left = this.n_steps;
         let that = this;
         while(step_left > 0) {
+            let total_avg = 0;
             samples.forEach((sample, index) => {
-                that.trainMore(mlp, sample);
+                that.trainNetworkPerSample(mlp, sample, index);
+                total_avg += mlp.avg_error(); // avg err. for the current sample
             });
-            
-            ////////
-            let output_layer_index = mlp.layers.length - 1;
-            let tot_err = 0;
-            mlp.errors[output_layer_index].forEach(err => {
-                tot_err += err * err;
-            });
-            tot_err /= mlp.layers.length;
-
+            let tot_err = total_avg / samples.length; // avg of sum(avg errors)
             fun(mlp, (this.n_steps - step_left), tot_err);
             step_left--;
         }
     }
 
     /**
+     * Backpropagation Algorithm for a single example
+     *
      * @param {MLP} mlp neuron input
-     * @param {Object} samples { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
-     * @param {Function} fun function called at each step
+     * @param {JSON} sample { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
+     * @param {number} index function called at each step
      */
-    trainMore(mlp, sample) {
+    trainNetworkPerSample(mlp, sample, index) {
         let error_t = 0; // error for a single example
         let alpha = this.alpha;
         let nb_layers = mlp.layers.length;
 
+        if(sample.label.length != mlp.layers[nb_layers - 1].getNbOfNeuron()) {
+            throw new Error("The output size and the nb. of neurons at the latest layer doesn't match.");
+        }
+        // initialisation
         mlp.getOutput(sample.input);
+
         mlp.computeArrayRepresentations();
 
         // computes deltas
@@ -129,24 +130,21 @@ class TrainingMachine {
                     }
                 }
                 mlp.errors[layer][node] = error;
-                mlp.deltas[layer][node] = error * output * (1 - output);
+
+                let _input = mlp.layers[layer].neurons[node].get('input');
+                let _derivative = mlp.layers[layer].neurons[node].getDerivativeOutput(_input);
+                mlp.deltas[layer][node] = error * _derivative; // error * output * (1 - output);
             }
         }
 
         // computes new weights
         for (let layer = 1; layer <= nb_layers - 1; layer++) {
-            let incoming = mlp.outputs[layer - 1];
+            let previous = mlp.outputs[layer - 1];
 
             for (let node = 0; node < mlp.layer_structure[layer]; node++) {
                 let delta = mlp.deltas[layer][node];
-
-                for (let k = 0; k < incoming.length; k++) {
-                    let change = mlp.changes[layer][node][k];
-
-                    change = (alpha * delta * incoming[k]) + (alpha/2) * change;
-
-                    mlp.changes[layer][node][k] = change;
-                    mlp.weights[layer][node][k] += change;
+                for (let k = 0; k < previous.length; k++) {
+                    mlp.weights[layer][node][k] += alpha * delta * previous[k];
                 }
                 mlp.biases[layer][node] += alpha * delta;
             }
@@ -154,20 +152,4 @@ class TrainingMachine {
 
         mlp.syncWithArrayRepresentations();
     }
-}
-
-
-/**
- * @param {Number[]} u 
- * @param {Number[]} v 
- */
-function matrixProduct(u, v) {
-
-}
-
-/**
- * @param {Number[]} u 
- */
-function matrixTranspose(u) {
-
 }

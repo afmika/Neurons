@@ -13,21 +13,27 @@ const width = canvas.width;
 const height = canvas.height;
 
 const evolution_time = 100; //ms
-const step = 5000;
-const learning_rate = 0.5;
+const step = 2000;
+const learning_rate = 0.8;
 
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [4, 6, 2],
-    n_input : 4
+    layer_structure : [4, 5, 3],
+    n_input : 5
 });
 
 const samples = [
-    {"input":[1, 0, 1, 1],"label":[1, 0]},
-    {"input":[1, 0, 1, 1],"label":[0, 1]},
-    {"input":[0, 1, 0, 0],"label":[1, 1]},
-    {"input":[0, 1, 1, 0],"label":[0, 1]}
+    {"input":[1, 1, 1, 1, 1],"label":[1, 1, 1]},
+    {"input":[0, 1, 1, 1, 1],"label":[1, 1, 1]},
+    {"input":[0, 0, 1, 1, 1],"label":[1, 1, 1]},
+    {"input":[0, 0, 0, 1, 1],"label":[0, 1, 1]},
+    {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
+    {"input":[0, 0, 0, 0, 1],"label":[0, 0, 1]},
+
+    {"input":[1, 0, 0, 0, 0],"label":[1, 0, 0]},
+    {"input":[1, 1, 0, 0, 0],"label":[1, 1, 0]},
+    {"input":[1, 1, 1, 1, 0],"label":[1, 1, 0]}
 ];
 
 $("#result").hide();
@@ -45,23 +51,37 @@ function logs(obj) {
 
 function runTest() {
     // test
+    // test
+    let pass_counter = 0;
+    samples.forEach(sample => {
+        const correct = sample.label;
+        const guessed = mlp.getOutput(sample.input);
+        let pass_count = 0;
+        guessed.forEach((guess, i) => {
+            let bool = Math.round(guess) == correct[i];
+            pass_count += bool ? 1 : 0;
+        });
+        const pass = pass_count >= 0.90 * guessed.length;
+        pass_counter += pass ? 1 : 0;
+        logs([sample.input.join(", "), sample.label.join(", "), guessed.join(", "), pass ? `<b class="text text-primary">Pass</b>` : `<b class="text text-danger">Fail</b>`]);
+    });
+
+    Draw.multiLayerNeuralNetwork(mlp, width, height);
+    let rate = Math.floor(100 * pass_counter / samples.length);
+    logs(["", "", "Success  ", pass_counter+ " / "+ samples.length + " ("+rate+"%)"]);
 }
 
 function startTraining() {
-    Draw.multiLayerNeuralNetwork(mlp, width, height);
     Trainer.trainNetwork(mlp, samples, function(mlp, s, err) {
-        if(s + 1 == step) {
-            console.log("step ", step);
-        }
-        if(s % 100 == 0) {
+        if(s % 500 == 0) {
             console.log("Error ", err);
         }
-
     });
 }
 
 try {
-     startTraining();
+    startTraining();
+    runTest();
 } catch(e) {
     alert("Oups! " +e)
 }

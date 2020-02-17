@@ -1,3 +1,9 @@
+ /**
+ * @author afmika
+ * @email afmichael73@gmail.com
+ * https://github.com/afmika
+ */
+
 class MLP {
     /**
      * @param {Object} config {layer_structure: [], n_input : number}
@@ -40,12 +46,11 @@ class MLP {
 
             layer.each((neuron, index) => {
                 neuron.setActivationFunction(this.functions.sigmoid.expression);
-                neuron.setActivationFunctionDerivative(this.functions.sigmoid.expression);
+                neuron.setActivationFunctionDerivative(this.functions.sigmoid.derivative);
             });
 
             this.layers.push(layer);
         }
-        // joins them
         for (let i = 0; i < this.layers.length; i++) {
             if(i + 1 < this.layers.length) {
                 this.layers[i].setNext(this.layers[i+1]);
@@ -63,7 +68,6 @@ class MLP {
         this.errors = []; // 2d
         this.deltas = []; // 2d
         this.outputs = []; // 2d
-        this.changes = []; // 2d
 
         let that = this;
         this.each((layer, l_index) => {
@@ -71,12 +75,10 @@ class MLP {
             that.biases[l_index] = [];
             that.errors[l_index] = [];
             that.deltas[l_index] = [];
-            that.outputs[l_index] = []; // 2d
-            that.changes[l_index] = []; // 2d
+            that.outputs[l_index] = [];
 
             layer.each((neuron, n_index) => {
                 that.weights[l_index][n_index] = neuron.weight;
-                that.changes[l_index][n_index] = new Array(neuron.weight.length).fill(0);
 
                 that.biases[l_index][n_index] = neuron.bias;
                 that.outputs[l_index][n_index] = neuron.get('output');
@@ -96,11 +98,21 @@ class MLP {
                 neuron.set("error", that.errors[l_index][n_index]);
                 neuron.set("delta", that.deltas[l_index][n_index]);
                 neuron.set("output", that.outputs[l_index][n_index]);
-                neuron.set("change", that.changes[l_index][n_index]);
             });
         });
     }
-
+    /**
+    * @returns {number}
+    */
+    avg_error() {
+        let output_layer_index = this.layers.length - 1;
+        let tot_err = 0;
+        this.errors[output_layer_index].forEach(err => {
+            tot_err += err * err;
+        });
+        tot_err /= this.layers.length;
+        return tot_err;
+    }
     /**
      * @param {Function} fun
      */
@@ -179,9 +191,4 @@ class MLP {
         // console.log(output);
         return output;
     }
-/*
-    weightsToMatrix() {
-
-    }
-*/
 }
