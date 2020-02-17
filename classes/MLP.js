@@ -63,6 +63,7 @@ class MLP {
         this.errors = []; // 2d
         this.deltas = []; // 2d
         this.outputs = []; // 2d
+        this.changes = []; // 2d
 
         let that = this;
         this.each((layer, l_index) => {
@@ -71,13 +72,16 @@ class MLP {
             that.errors[l_index] = [];
             that.deltas[l_index] = [];
             that.outputs[l_index] = []; // 2d
+            that.changes[l_index] = []; // 2d
 
             layer.each((neuron, n_index) => {
                 that.weights[l_index][n_index] = neuron.weight;
+                that.changes[l_index][n_index] = new Array(neuron.weight.length).fill(0);
+
                 that.biases[l_index][n_index] = neuron.bias;
+                that.outputs[l_index][n_index] = neuron.get('output');
                 that.errors[l_index][n_index] = 0;
                 that.deltas[l_index][n_index] = 0;
-                that.outputs[l_index][n_index] = 0;
             });
         });
     }
@@ -92,6 +96,7 @@ class MLP {
                 neuron.set("error", that.errors[l_index][n_index]);
                 neuron.set("delta", that.deltas[l_index][n_index]);
                 neuron.set("output", that.outputs[l_index][n_index]);
+                neuron.set("change", that.changes[l_index][n_index]);
             });
         });
     }
@@ -153,13 +158,14 @@ class MLP {
             } else {
                 let previous = that.layers[l_index - 1];
                 previous.each((p_neuron, pn_index) => {
-                    _input.push(p_neuron.get('out'));
+                    _input.push(p_neuron.get('output'));
                 });
             }
+
             layer.each((neuron, n_index) => {
                 const out = neuron.getOutput(_input);
                 neuron.set('input', _input); // used for training
-                neuron.set("out", out);
+                neuron.set("output", out);
                 output.push(out);
             });
 

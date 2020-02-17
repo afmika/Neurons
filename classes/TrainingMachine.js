@@ -81,10 +81,21 @@ class TrainingMachine {
      */
     trainNetwork(mlp, samples, fun) {
         let step_left = this.n_steps;
+        let that = this;
         while(step_left > 0) {
-            this.trainMore(mlp, samples);
+            samples.forEach((sample, index) => {
+                that.trainMore(mlp, sample);
+            });
+            
             ////////
-            fun(mlp, (this.n_steps - step_left));
+            let output_layer_index = mlp.layers.length - 1;
+            let tot_err = 0;
+            mlp.errors[output_layer_index].forEach(err => {
+                tot_err += err * err;
+            });
+            tot_err /= mlp.layers.length;
+
+            fun(mlp, (this.n_steps - step_left), tot_err);
             step_left--;
         }
     }
@@ -94,58 +105,54 @@ class TrainingMachine {
      * @param {Object} samples { outputs : [ Array N * N_INPUT ] , labels : [ Array N] } :: configuration object
      * @param {Function} fun function called at each step
      */
-    trainMore(mlp, samples) {
-        let avg_error = 0;
+    trainMore(mlp, sample) {
+        let error_t = 0; // error for a single example
         let alpha = this.alpha;
         let nb_layers = mlp.layers.length;
+
+        mlp.getOutput(sample.input);
+        mlp.computeArrayRepresentations();
+
+        // computes deltas
         for (let qq = 0; qq < nb_layers; qq++) {
+            let layer = nb_layers - qq - 1;
+            for (let node = 0; node < mlp.layer_structure[layer]; node++) {
+                let output = mlp.outputs[layer][node];
 
-            let l_index = nb_layers - qq - 1;
-            mlp.layers[l_index].each((neuron, j) => {
-                let neuron_bias_delta = 0;
-                for (let i = 0; i < neuron.weight.length; i++) {
-                    let neuron_weight_delta = 0;
-                    if(l_index == nb_layers - 1) {
-                        samples.forEach((sample, index) => {
-                            let output = mlp.getOutput(sample.input);
-                            let error = (sample.label[j] - output[j]);
-                            let derivative = neuron.getDerivativeOutput(neuron.get('input'));
-                            let temp =  mlp.layers[l_index - 1].neurons[i];
-                            let yi = temp.getOutput(temp.get('input'));
-                            let delta = error * derivative;
-
-                            neuron_weight_delta +=  delta * yi;
-                            neuron_bias_delta += delta;
-
-                            neuron.set("delta", delta);
-                        });
-                        neuron_weight_delta *= alpha / samples.length;
-                        neuron_bias_delta *= alpha / samples.length;
-                    } else if(l_index - 1 >= 0) {
-                        //samples.forEach((sample, index) => {
-                            let sumDeltas = 0;
-                            mlp.layers[l_index + 1].each((neuron_k, k) => {
-                                sumDeltas += neuron_k.get("delta") * neuron_k.weight[j];
-                            });
-
-                            let derivative = neuron.getDerivativeOutput(neuron.get('input'));
-                            let temp =  mlp.layers[l_index - 1].neurons[i];
-                            let yi = temp.getOutput(temp.get('input'));
-                            let delta = sumDeltas * derivative;
-
-                            neuron_weight_delta +=  delta * yi;
-                            neuron_bias_delta += delta;
-
-                            neuron.set("delta", delta);
-                        //});
-                        neuron_weight_delta *= alpha /*/ samples.length*/;
-                        neuron_bias_delta *= alpha /*/ samples.length*/;
+                let error = 0;
+                if (layer == nb_layers - 1) {
+                    error = sample.label[node] - output;
+                } else {
+                    let deltas = mlp.deltas[layer + 1];
+                    for (let k = 0; k < deltas.length; k++) {
+                        error += deltas[k] * mlp.weights[layer + 1][k][node];
                     }
-                    neuron.weight[i] += neuron_weight_delta;
                 }
-                neuron.bias += neuron_bias_delta;
-            });
+                mlp.errors[layer][node] = error;
+                mlp.deltas[layer][node] = error * output * (1 - output);
+            }
         }
+
+        // computes new weights
+        for (let layer = 1; layer <= nb_layers - 1; layer++) {
+            let incoming = mlp.outputs[layer - 1];
+
+            for (let node = 0; node < mlp.layer_structure[layer]; node++) {
+                let delta = mlp.deltas[layer][node];
+
+                for (let k = 0; k < incoming.length; k++) {
+                    let change = mlp.changes[layer][node][k];
+
+                    change = (alpha * delta * incoming[k]) + (alpha/2) * change;
+
+                    mlp.changes[layer][node][k] = change;
+                    mlp.weights[layer][node][k] += change;
+                }
+                mlp.biases[layer][node] += alpha * delta;
+            }
+        }
+
+        mlp.syncWithArrayRepresentations();
     }
 }
 
