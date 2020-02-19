@@ -35,6 +35,7 @@ const samples = [
 ];
 
 $("#result").hide();
+$("#nb_step").text("Steps "+step);
 function logs(obj) {
     $("#result").show();
     $("#waiting").hide();
@@ -80,5 +81,5 @@ try {
     startTraining();
     runTest();
 } catch(e) {
-    alert("Oups! " +e)
+    alert("Oups! " +e);
 }

@@ -17,14 +17,14 @@ const height = canvas.height;
 const evolution_time = 60; //ms
 const step = 1500;
 const learning_rate = 0.8;
-let avg_grad_errors = [];
+let avg_data_errors = [];
 let max_error = -Infinity;
 let max_array = 150;
 
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [4, 4, 3],
+    layer_structure : [10, 3],
     n_input : 5
 });
 
@@ -41,6 +41,7 @@ const samples = [
 ];
 
 $("#result").hide();
+$("#nb_step").text("Steps "+step);
 function logs(obj) {
     $("#result").show();
     $("#waiting").hide();
@@ -54,12 +55,12 @@ function logs(obj) {
 }
 
 function drawGradientErrorCurve() {
-    if(avg_grad_errors.length > 0) {
-        let dt = graph.width / avg_grad_errors.length;
+    if(avg_data_errors.length > 0) {
+        let dt = graph.width / avg_data_errors.length;
         DrawGraph.clear(0, 0, graph.width, graph.height);
         let xs = 0, ys = 0;
-        for (let index = 0; index < avg_grad_errors.length; index++) {
-            const dE = avg_grad_errors[index];
+        for (let index = 0; index < avg_data_errors.length; index++) {
+            const dE = avg_data_errors[index];
             let x = index * dt;
             let hy = dE;
             max_error = Math.max(hy, max_error);
@@ -109,18 +110,18 @@ function startTraining() {
                 total_avg += mlp.avg_error();
             });
 
-            average_grad_error = total_avg / samples.length;
-            avg_grad_errors.push(average_grad_error);
-            if(avg_grad_errors.length >= max_array) {
-                avg_grad_errors = avg_grad_errors.filter((q, i) => {
-                    return i % 9 != 0 || i == 0 || i + 1 == avg_grad_errors.length
+            let curr_avg_data_error = total_avg / samples.length;
+            avg_data_errors.push(curr_avg_data_error);
+            if(avg_data_errors.length >= max_array) {
+                avg_data_errors = avg_data_errors.filter((q, i) => {
+                    return i % 9 != 0 || i == 0 || i + 1 == avg_data_errors.length
                 });
             }
 
             drawGradientErrorCurve();
             Draw.multiLayerNeuralNetwork(mlp, width, height);
             Draw.text((step - step_left) + " STEPS", 20, 20);
-            DrawGraph.text("AVG ERROR GRADIENT : "+ average_grad_error, 200, 20);
+            DrawGraph.text("AVG DATA SET ERROR : "+ curr_avg_data_error, 200, 20);
 
         } else {
             clearInterval(interval);
