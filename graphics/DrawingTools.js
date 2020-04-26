@@ -113,7 +113,8 @@ class DrawingTools {
 		};
 		inputs_coord.forEach((p, i) => {
 			let rel = Math.abs(w[i] / 5);
-			let color = "rgb(0, 0, 100, "+rel+")";
+			
+			let color = w[i] < 0 ? `rgb(100, 0, 0, ${rel})` : `rgb(0, 0, 100, ${rel})`;
 			this.line(n.x, n.y, p.x, p.y, color, 5);
 			this.circle(p.x, p.y, radius, "black", "grey");
 
@@ -199,7 +200,7 @@ class DrawingTools {
 				let color = 55 + Math.round(Math.abs(rel) * 1000 ) % 200;
 
 				opacity = opacity >= 1 ? 1 : opacity;
-				color = "rgb(0, 0, 0, "+opacity+")";
+				color = rel < 0 ? `rgb(100, 0, 0, ${opacity})` : `rgb(0, 0, 100, ${opacity})`;
 				this.line(p.x, p.y, p.x, p.y + bias_height, color, 4);
 			});
 		});
@@ -219,9 +220,9 @@ class DrawingTools {
 
 					let opacity = Math.abs(rel);
 					let color = 55 + Math.round(Math.abs(rel) * 1000 ) % 200;
-
+					
 					opacity = opacity >= 1 ? 1 : opacity;
-					color = "rgb(0, 0, 100, "+opacity+")";
+					color = rel < 0 ? `rgb(100, 0, 0, ${opacity})` : `rgb(0, 0, 100, ${opacity})`;
 					this.line(p.x, p.y, prev.x, prev.y, color, 4);
 				}
 
