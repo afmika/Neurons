@@ -115,8 +115,8 @@ class DrawingTools {
 			let rel = Math.abs(w[i] / 5);
 			
 			let color = w[i] < 0 ? `rgb(100, 0, 0, ${rel})` : `rgb(0, 0, 100, ${rel})`;
+			this.circle(p.x, p.y, radius, "black", "rgba(100, 50, 1, 0.1)");
 			this.line(n.x, n.y, p.x, p.y, color, 5);
-			this.circle(p.x, p.y, radius, "black", "grey");
 
 			this.text(w[i] + "", p.x + radius * 2, p.y);
 		});
@@ -169,7 +169,7 @@ class DrawingTools {
 			y : c_height / 2
 		};
 		inputs_coord.forEach((p, i) => {
-			this.circle(p.x, p.y, radius, "black", "grey");
+			this.circle(p.x, p.y, radius, "black", "rgba(100, 50, 1, 0.1)");
 		});
 
 		// neurons
