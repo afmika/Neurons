@@ -26,7 +26,7 @@ class MLP {
     }
 
     /**
-     * Configure the neural network's general structure
+     * Configures the neural network's general structure
      * @param {Object} config {layer_structure: [], n_input : number}
      */
     setConfig(config) {
@@ -90,7 +90,7 @@ class MLP {
     }
 
     syncWithArrayRepresentations() {
-        // called to sync the object representation and the array representation
+        // called when we want to sync the object representation with the array representation
         let that = this;
         this.each((layer, l_index) => {
             layer.each((neuron, n_index) => {

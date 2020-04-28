@@ -14,8 +14,8 @@ const DrawGraph = new DrawingTools(ctx_graph);
 const width = canvas.width;
 const height = canvas.height;
 
-const evolution_time = 60; //ms
-const step = 1500;
+const evolution_time = 40; //ms
+const step = 300;
 const learning_rate = 0.8;
 let avg_data_errors = [];
 let max_error = -Infinity;
@@ -24,21 +24,30 @@ let max_array = 150;
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [10, 3],
-    n_input : 5
+    layer_structure : [9, 4],
+    n_input : 8
 });
 
+/*
+	XOR problem
+	1- xor(1010, 1111) = 0101
+	2- xor(0110, 0110) = 0000
+	3- xor(1001, 1000) = 0001
+	4- xor(1101, 0011) = 1110
+	5- xor(1101, 0011) = 1110
+	6- xor(1111, 1010) = 0101
+	... etc
+*/
 const samples = [
-    {"input" : [1, 1, 1, 1, 1], "label" : [1, 1, 1]},
-    {"input" : [0, 1, 1, 1, 1], "label" : [1, 1, 1]},
-    {"input" : [0, 0, 1, 1, 1], "label" : [1, 1, 1]},
-    {"input" : [0, 0, 0, 1, 1], "label" : [0, 1, 1]},
-    {"input" : [0, 0, 0, 0, 1], "label" : [0, 0, 1]},
-    {"input" : [0, 0, 0, 0, 1], "label" : [0, 0, 1]},
-    {"input" : [1, 0, 0, 0, 0], "label" : [1, 0, 0]},
-    {"input" : [1, 1, 0, 0, 0], "label" : [1, 1, 0]},
-    {"input" : [1, 1, 1, 1, 0], "label" : [1, 1, 0]}
+	{"input": [1,0,1,0,1,1,1,1], "label": [0,1,0,1]},
+	{"input": [0,1,1,0,0,1,1,0], "label": [0,0,0,0]},
+	{"input": [1,0,0,1,1,0,0,0], "label": [0,0,0,1]},
+	{"input": [1,1,0,1,0,0,1,1], "label": [1,1,1,0]},
+	{"input": [1,1,0,1,0,0,1,1], "label": [1,1,1,0]},
+	{"input": [1,1,1,1,1,0,1,0], "label": [0,1,0,1]}
+	
 ];
+
 
 $("#result").hide();
 $("#nb_step").text("Steps "+step);

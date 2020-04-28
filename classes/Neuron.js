@@ -59,8 +59,8 @@ class Neuron {
         this.weight = weight;
     }
     initRandomWeight() {
-        this.weight = this.weight.map(w => Math.random());
-        this.bias = Math.random();
+        this.weight = this.weight.map(w => -Math.random() + Math.random() );
+        this.bias = -Math.random() + Math.random();
     }
     
     /**

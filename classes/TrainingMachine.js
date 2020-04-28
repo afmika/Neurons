@@ -118,7 +118,7 @@ class TrainingMachine {
         }
 
         // computes new weights
-        for (let layer = 1; layer <= nb_layers - 1; layer++) {
+        for (let layer = 1; layer < nb_layers; layer++) {
             let previous = mlp.outputs[layer - 1];
 
             for (let node = 0; node < mlp.layer_structure[layer]; node++) {
