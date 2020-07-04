@@ -118,8 +118,14 @@ class TrainingMachine {
         }
 
         // computes new weights
-        for (let layer = 1; layer < nb_layers; layer++) {
-            let previous = mlp.outputs[layer - 1];
+        for (let layer = 0; layer < nb_layers; layer++) {
+            let previous = null;
+			if ( layer - 1 < 0 ) {
+				previous = sample.input;
+				// continue; 
+			} else {
+				previous = mlp.outputs[layer - 1];
+			}
 
             for (let node = 0; node < mlp.layer_structure[layer]; node++) {
                 let delta = mlp.deltas[layer][node];

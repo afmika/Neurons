@@ -15,16 +15,16 @@ const width = canvas.width;
 const height = canvas.height;
 
 const evolution_time = 40; //ms
-const step = 300;
+const step = 100;
 const learning_rate = 0.8;
 let avg_data_errors = [];
 let max_error = -Infinity;
-let max_array = 150;
+let max_array = 2000;
 
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
-    layer_structure : [9, 4],
+    layer_structure : [5, 4],
     n_input : 8
 });
 
@@ -38,6 +38,7 @@ mlp.setConfig({
 	6- xor(1111, 1010) = 0101
 	... etc
 */
+
 const samples = [
 	{"input": [1,0,1,0,1,1,1,1], "label": [0,1,0,1]},
 	{"input": [0,1,1,0,0,1,1,0], "label": [0,0,0,0]},
@@ -46,7 +47,6 @@ const samples = [
 	{"input": [1,1,0,1,0,0,1,1], "label": [1,1,1,0]},
 	{"input": [1,1,1,1,1,0,1,0], "label": [0,1,0,1]}
 ];
-
 
 $("#result").hide();
 $("#nb_step").text("Steps "+step);
