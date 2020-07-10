@@ -25,7 +25,8 @@ let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
 mlp.setConfig({
     layer_structure : [5, 4],
-    n_input : 8
+    n_input : 8,
+    activation : Function.Sigmoid
 });
 
 /*

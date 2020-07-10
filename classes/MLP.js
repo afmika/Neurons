@@ -12,17 +12,6 @@ class MLP {
         if(config) {
             this.setConfig(config);
         }
-
-        this.functions = {
-            sigmoid : {
-                expression : function(s) {
-                    return 1 / (1 + Math.exp(-s));
-                },
-                derivative : function(s) {
-                    return 1/ ( 2 + Math.exp(-s)+Math.exp(s));
-                }
-            }
-        }
     }
 
     /**
@@ -33,12 +22,16 @@ class MLP {
         this.layer_structure = config.layer_structure;
         this.n_input = config.n_input;
 
+        this.default_activation = config.activation || Function.Sigmoid;
+
         this.layers = [];
         this.init();
     }
 
     init() {
         // defines each layer
+		let activation_func = this.default_activation;
+        console.log(activation_func);
         for (let index = 0; index < this.layer_structure.length; index++) {
             let layer = new Layer();
             layer.data['index'] = index;
@@ -46,8 +39,8 @@ class MLP {
             layer.setNeuronsTo(this.layer_structure[index], nb_of_inputs);
 
             layer.each((neuron, index) => {
-                neuron.setActivationFunction(this.functions.sigmoid.expression);
-                neuron.setActivationFunctionDerivative(this.functions.sigmoid.derivative);
+                neuron.setActivationFunction(activation_func.expression);
+                neuron.setActivationFunctionDerivative(activation_func.derivative);
             });
 
             this.layers.push(layer);

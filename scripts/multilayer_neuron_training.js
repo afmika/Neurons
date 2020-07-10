@@ -17,9 +17,13 @@ const learning_rate = 0.8;
 
 let Trainer = new TrainingMachine(step, learning_rate);
 let mlp = new MLP();
+
 mlp.setConfig({
     layer_structure : [5, 4, 3],
-    n_input : 5
+    n_input : 5,
+    // activation : new ActivationFunction( x => 0.1 * x + 1 )
+    // activation : Function.ReLU
+    activation : Function.Sigmoid
 });
 
 const samples = [

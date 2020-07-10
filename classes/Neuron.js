@@ -14,13 +14,8 @@ class Neuron {
         this.weight = new Array(n_input).fill(0);
         this.bias = 0;
         this.data = {};
-        this.activationFunction = function(s) {
-            return 1 / (1 + Math.exp(-s));
-        };
-
-        this.activationFunctionDerivative = function(s) {
-            return 1/ ( 2 + Math.exp(-s)+Math.exp(s));
-        };
+        this.activationFunction = Function.Sigmoid.expression;
+        this.activationFunctionDerivative = Function.Sigmoid.derivative;
     }
     /**
      * @param {string} key data.key
